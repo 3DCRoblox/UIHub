@@ -35,26 +35,24 @@ local Fill_2 = Instance.new("ImageLabel")
 local Text_8 = Instance.new("TextLabel")
 local UIAspectRatioConstraint = Instance.new("UIAspectRatioConstraint")
 
+local mt = getrawmetatable(game)
+local old = mt.__namecall
+local protect = newcclosure or protect_function
 
-local Mt = getrawmetatable(game)
-local Old = mt.__namecall
-local Protect = newcclosure or protect_function
+if not protect then
+	protect = function(f) return f end
+end
 
-	if not Protect then
-		Protect = function(f) return f end
+setreadonly(mt, false)
+mt.__namecall = protect(function(self, ...)
+	local method = getnamecallmethod()
+	if method == "Kick" then
+		wait(9e9)
+		return
 	end
-
-	setreadonly(Mt, false)
-	Mt.__namecall = Protect(function(self, ...)
-		local method = getnamecallmethod()
-		if method == "Kick" then
-			wait(9e9)
-			return
-		end
-		return Old(self, ...)
-	end)
-	hookfunction(game:GetService("Players").LocalPlayer.Kick, Protect(function() wait(9e9) end))
-
+	return old(self, ...)
+end)
+hookfunction(game:GetService("Players").LocalPlayer.Kick,protect(function() wait(9e9) end))
 
 function SendNotification(Text_)
 	StarterGui:SetCore("SendNotification", {Title = Text_.Text.." Loaded!", Text = "Enjoy!"})
